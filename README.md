@@ -57,7 +57,7 @@ This collection includes a variety of Python functions and classes for analyzing
 
 ## Usage
 1. Analyze Z-Displacement with Periodic Boundaries
-   ```python
+```python
 from analysis import extract_z_coordinates_with_pbc, plot_relative_displacement
 
 xyz_file_path = "path/to/structure.xyz"
@@ -67,3 +67,44 @@ c_vector_length = 10.0
 z_coords, num_frames = extract_z_coordinates_with_pbc(xyz_file_path, atom_indices, c_vector_length)
 plot_relative_displacement(z_coords, num_frames)
 ```
+
+2. Anion Distribution Analysis
+```python
+from cof_analyzer import COFAnalyzer
+
+analyzer = COFAnalyzer("trajectory.dcd", [[10.0, 0.0, 0.0], [0.0, 10.0, 0.0], [0.0, 0.0, 10.0]])
+distances, pmf = analyzer.analyze_anion_distribution("F")
+analyzer.plot_pmf(distances, pmf)
+```
+
+3. Halide Interaction Analysis
+```python
+from halide_interaction_analyzer import HalideInteractionAnalyzer
+
+analyzer = HalideInteractionAnalyzer("topology.psf", "trajectory.dcd", [1, 2, 3], cutoff=5.0)
+interactions, matrix = analyzer.run_analysis()
+```
+
+4. Generate Interaction Comparison Plots
+```python
+from interaction_plotter import compare_halide_interactions
+
+interaction_files = {
+    "CL": "cl_interactions.csv",
+    "BR": "br_interactions.csv",
+    "I": "i_interactions.csv"
+}
+compare_halide_interactions(interaction_files)
+```
+
+## Dependencies
+- Python 3.7+
+- NumPy
+- Pandas
+- Matplotlib
+- Seaborn
+- ASE
+- MDAnalysis
+
+## License
+This project is licensed under the MIT License.
