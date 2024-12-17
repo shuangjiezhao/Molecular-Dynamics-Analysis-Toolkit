@@ -1,0 +1,57 @@
+import numpy as np
+import MDAnalysis as mda
+import matplotlib.pyplot as plt
+from utils import apply_periodic_boundaries
+
+class COFAnalyzer:
+    def __init__(self, trajectory_file, cell_vectors):
+        self.universe = mda.Universe(trajectory_file)
+        self.cell_vectors = np.array(cell_vectors)
+        self.kT = 0.592  # kcal/mol at 300K
+
+    def analyze_anion_distribution(self, anion_name):
+        anions = self.universe.select_atoms(f"name {anion_name}")
+        N_atoms = self.universe.select_atoms("name N")
+        
+        if len(anions) == 0 or len(N_atoms) == 0:
+            raise ValueError(f"No atoms found for anion {anion_name} or N atoms")
+        
+        distances = []
+        z_positions = []
+        
+        for ts in self.universe.trajectory:
+            anion_pos = apply_periodic_boundaries(anions.positions, self.cell_vectors)
+            N_pos = apply_periodic_boundaries(N_atoms.positions, self.cell_vectors)
+            
+            for anion in anion_pos:
+                N_distances = [self.calculate_minimum_distance(anion, n_pos) 
+                             for n_pos in N_pos]
+                distances.append(min(N_distances))
+                z_positions.append(anion[2] / self.cell_vectors[2, 2])
+        
+        return np.array(distances), np.array(z_positions)
+
+    def calculate_minimum_distance(self, point1, point2):
+        inv_cell = np.linalg.inv(self.cell_vectors)
+        frac1 = np.dot(point1, inv_cell)
+        frac2 = np.dot(point2, inv_cell)
+        diff = frac1 - frac2
+        diff = diff - np.round(diff)
+        cart_diff = np.dot(diff, self.cell_vectors)
+        return np.linalg.norm(cart_diff)
+
+    def calculate_pmf(self, data, bins=50):
+        hist, bin_edges = np.histogram(data, bins=bins, density=True)
+        bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
+        pmf = -self.kT * np.log(hist / np.max(hist))
+        return bin_centers, pmf
+
+    def plot_pmf(self, bin_centers, pmf):
+        plt.figure(figsize=(10, 6))
+        plt.plot(bin_centers, pmf, 'b-', linewidth=2)
+        plt.xlabel('Distance (Å)')
+        plt.ylabel('PMF (kcal/mol)')
+        plt.title('Potential of Mean Force')
+        plt.grid(True, linestyle='--', alpha=0.7)
+        plt.tight_layout()
+        plt.show()
