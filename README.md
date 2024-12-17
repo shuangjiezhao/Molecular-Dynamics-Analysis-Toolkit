@@ -22,14 +22,14 @@ This collection includes a variety of Python functions and classes for analyzing
      - Generates per-step interaction data and rolling trends.
      - Saves results as CSV files and visualizes interaction patterns.
     
-  4. Data Visualization
+4. Data Visualization
 
-     - plot_relative_displacement(): Visualizes z-displacements of atoms over time.
-     - compare_halide_interactions(): Compares halide ion interactions using boxplots and KDE.
-- plot_pmf(): Creates PMF plots for atomic group interactions.
-- High-quality visualizations using libraries like Matplotlib and Seaborn.
+   - plot_relative_displacement(): Visualizes z-displacements of atoms over time.
+   - compare_halide_interactions(): Compares halide ion interactions using boxplots and KDE.
+   - plot_pmf(): Creates PMF plots for atomic group interactions.
+   - High-quality visualizations using libraries like Matplotlib and Seaborn.
 
 5. Utility Functions
 
-- sphere_volume() and calculate_overlap(): Calculate sphere volumes and overlaps in molecular geometries.
-- calculate_minimum_distance(): Computes minimum distances between atoms considering periodicity.
+   - sphere_volume() and calculate_overlap(): Calculate sphere volumes and overlaps in molecular geometries.
+   - calculate_minimum_distance(): Computes minimum distances between atoms considering periodicity.
